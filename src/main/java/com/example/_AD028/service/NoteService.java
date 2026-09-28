@@ -38,20 +38,24 @@ public class NoteService {
 
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() ->
-                        new RuntimeException("Student not found with ID: " + studentId));
+                        new RuntimeException(
+                                "Student not found with ID: " + studentId));
 
         Subject subject = subjectRepository.findById(subjectId)
                 .orElseThrow(() ->
-                        new RuntimeException("Subject not found with ID: " + subjectId));
+                        new RuntimeException(
+                                "Subject not found with ID: " + subjectId));
 
-        Note note = new Note();
-
-        note.setTitle(title);
-        note.setUnit(unit);
-        note.setFileName(fileName);
-        note.setFileUrl(fileUrl);
-        note.setUploader(student);
-        note.setSubject(subject);
+        // Create note using constructor
+        // This automatically sets uploadedAt
+        Note note = new Note(
+                title,
+                unit,
+                fileName,
+                fileUrl,
+                student,
+                subject
+        );
 
         return noteRepository.save(note);
     }
@@ -65,7 +69,8 @@ public class NoteService {
     public Note getNoteById(Long id) {
         return noteRepository.findById(id)
                 .orElseThrow(() ->
-                        new RuntimeException("Note not found with ID: " + id));
+                        new RuntimeException(
+                                "Note not found with ID: " + id));
     }
 
     // GET NOTES BY SUBJECT

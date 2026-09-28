@@ -1,47 +1,44 @@
 package com.example._AD028.service;
 
+import com.example._AD028.entity.Comment;
 import com.example._AD028.entity.Note;
-import com.example._AD028.entity.RatingEntity;
 import com.example._AD028.entity.Student;
-import com.example._AD028.exception.DuplicateRatingException;
+import com.example._AD028.repository.CommentRepository;
 import com.example._AD028.repository.NoteRepository;
-import com.example._AD028.repository.RatingRepository;
 import com.example._AD028.repository.StudentRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class RatingService {
+public class CommentService {
 
-    private final RatingRepository ratingRepository;
+    private final CommentRepository commentRepository;
     private final StudentRepository studentRepository;
     private final NoteRepository noteRepository;
 
-    public RatingService(
-            RatingRepository ratingRepository,
+    public CommentService(
+            CommentRepository commentRepository,
             StudentRepository studentRepository,
             NoteRepository noteRepository) {
 
-        this.ratingRepository = ratingRepository;
+        this.commentRepository = commentRepository;
         this.studentRepository = studentRepository;
         this.noteRepository = noteRepository;
     }
 
-    // CREATE RATING
-    public RatingEntity createRating(
-            int rating,
+    // CREATE COMMENT
+    public Comment createComment(
+            String content,
             Long studentId,
             Long noteId) {
 
-        // Validate rating
-        if (rating < 1 || rating > 5) {
+        if (content == null || content.trim().isEmpty()) {
             throw new RuntimeException(
-                    "Rating must be between 1 and 5"
+                    "Comment content cannot be empty"
             );
         }
 
-        // Check student
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() ->
                         new RuntimeException(
@@ -49,7 +46,6 @@ public class RatingService {
                         )
                 );
 
-        // Check note
         Note note = noteRepository.findById(noteId)
                 .orElseThrow(() ->
                         new RuntimeException(
@@ -57,44 +53,32 @@ public class RatingService {
                         )
                 );
 
-        // Check if student already rated this note
-        if (ratingRepository
-                .findByStudentIdAndNoteId(studentId, noteId)
-                .isPresent()) {
-
-            throw new DuplicateRatingException(
-                    "Student has already rated this note"
-            );
-        }
-
-        // Create new rating
-        RatingEntity newRating = new RatingEntity(
-                rating,
+        Comment comment = new Comment(
+                content,
                 student,
                 note
         );
 
-        return ratingRepository.save(newRating);
+        return commentRepository.save(comment);
     }
 
-    // GET ALL RATINGS
-    public List<RatingEntity> getAllRatings() {
-        return ratingRepository.findAll();
+    // GET ALL COMMENTS
+    public List<Comment> getAllComments() {
+        return commentRepository.findAll();
     }
 
-    // GET RATING BY ID
-    public RatingEntity getRatingById(Long id) {
-
-        return ratingRepository.findById(id)
+    // GET COMMENT BY ID
+    public Comment getCommentById(Long id) {
+        return commentRepository.findById(id)
                 .orElseThrow(() ->
                         new RuntimeException(
-                                "Rating not found with ID: " + id
+                                "Comment not found with ID: " + id
                         )
                 );
     }
 
-    // GET RATINGS FOR A NOTE
-    public List<RatingEntity> getRatingsByNote(Long noteId) {
+    // GET COMMENTS FOR A NOTE
+    public List<Comment> getCommentsByNote(Long noteId) {
 
         if (!noteRepository.existsById(noteId)) {
             throw new RuntimeException(
@@ -102,11 +86,11 @@ public class RatingService {
             );
         }
 
-        return ratingRepository.findByNoteId(noteId);
+        return commentRepository.findByNoteId(noteId);
     }
 
-    // GET RATINGS BY A STUDENT
-    public List<RatingEntity> getRatingsByStudent(Long studentId) {
+    // GET COMMENTS BY A STUDENT
+    public List<Comment> getCommentsByStudent(Long studentId) {
 
         if (!studentRepository.existsById(studentId)) {
             throw new RuntimeException(
@@ -114,18 +98,18 @@ public class RatingService {
             );
         }
 
-        return ratingRepository.findByStudentId(studentId);
+        return commentRepository.findByStudentId(studentId);
     }
 
-    // DELETE RATING
-    public void deleteRating(Long id) {
+    // DELETE COMMENT
+    public void deleteComment(Long id) {
 
-        if (!ratingRepository.existsById(id)) {
+        if (!commentRepository.existsById(id)) {
             throw new RuntimeException(
-                    "Rating not found with ID: " + id
+                    "Comment not found with ID: " + id
             );
         }
 
-        ratingRepository.deleteById(id);
+        commentRepository.deleteById(id);
     }
 }
