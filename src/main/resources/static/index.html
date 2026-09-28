@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NoteShare - Student Notes & Study Materials Repository</title>
+    <meta name="description" content="NoteShare is a platform for students to share, find, rate, and comment on course notes and study materials.">
+    
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Application Styles -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+    <!-- Header Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="brand-logo">
+                <div class="brand-icon"><i class="fas fa-graduation-cap"></i></div>
+                <span>NoteShare</span>
+            </div>
+
+            <ul class="nav-menu">
+                <li><a href="#" class="nav-link active" data-tab="notes-view"><i class="fas fa-book-open"></i> Notes</a></li>
+                <li><a href="#" class="nav-link" data-tab="subjects-view"><i class="fas fa-layer-group"></i> Subjects</a></li>
+                <li><a href="#" class="nav-link" data-tab="students-view"><i class="fas fa-user-graduate"></i> Students</a></li>
+            </ul>
+
+            <div class="profile-selector-wrap">
+                <span id="backend-status" class="status-pill status-offline">
+                    <span class="pulse-dot"></span> Connecting...
+                </span>
+                <select id="current-student-select" class="select-profile" title="Active Student Profile">
+                    <option value="">Loading profiles...</option>
+                </select>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Header -->
+    <header class="hero-header">
+        <div class="hero-content">
+            <h1 class="hero-title">Student Notes Sharing Repository</h1>
+            <p class="hero-subtitle">Access course notes, filter by units, rate materials, and collaborate with classmates.</p>
+            
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <span class="stat-number" id="stat-total-notes">0</span>
+                    <span class="stat-label">Notes Shared</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="stat-total-subjects">0</span>
+                    <span class="stat-label">Subjects</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="stat-total-students">0</span>
+                    <span class="stat-label">Students</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-container">
+
+        <!-- TAB 1: NOTES EXPLORER VIEW -->
+        <section id="notes-view" class="tab-content active">
+            <!-- Toolbar & Controls -->
+            <div class="action-toolbar">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-input" class="search-input" placeholder="Search notes by title, unit, subject, or student...">
+                </div>
+
+                <div class="filter-group">
+                    <select id="subject-filter" class="filter-select">
+                        <option value="ALL">All Subjects</option>
+                    </select>
+
+                    <select id="unit-filter" class="filter-select">
+                        <option value="ALL">All Units</option>
+                    </select>
+
+                    <button id="btn-upload-note" class="btn btn-primary">
+                        <i class="fas fa-cloud-upload-alt"></i> Upload Note
+                    </button>
+                </div>
+            </div>
+
+            <!-- Notes Cards Grid -->
+            <div id="notes-grid" class="cards-grid">
+                <!-- Dynamically populated notes cards -->
+            </div>
+        </section>
+
+        <!-- TAB 2: SUBJECTS DIRECTORY VIEW -->
+        <section id="subjects-view" class="tab-content">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fas fa-layer-group me-2"></i> Course Subjects</h2>
+                <button id="btn-add-subject" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add New Subject
+                </button>
+            </div>
+            <div id="subjects-grid" class="cards-grid">
+                <!-- Dynamically populated subject cards -->
+            </div>
+        </section>
+
+        <!-- TAB 3: STUDENTS DIRECTORY VIEW -->
+        <section id="students-view" class="tab-content">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fas fa-user-graduate me-2"></i> Student Profiles</h2>
+                <button id="btn-add-student" class="btn btn-primary">
+                    <i class="fas fa-user-plus"></i> Register Student
+                </button>
+            </div>
+            <div id="students-grid" class="cards-grid">
+                <!-- Dynamically populated student cards -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 NoteShare - Connected to Spring Boot Backend REST APIs.</p>
+    </footer>
+
+    <!-- MODAL 1: UPLOAD NOTE -->
+    <div id="modal-upload-note" class="modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3 class="modal-title"><i class="fas fa-file-upload text-primary"></i> Upload Study Note</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="form-upload-note">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">Note Title *</label>
+                        <input type="text" id="upload-note-title" class="form-control" placeholder="e.g., Data Structures Unit 2 Summary" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Subject *</label>
+                        <select id="upload-note-subject" class="form-control" required>
+                            <option value="">Select Subject</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Unit / Module *</label>
+                        <input type="text" id="upload-note-unit" class="form-control" placeholder="e.g., Unit 1, Module 2, or Chapter 3" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">File Display Name</label>
+                        <input type="text" id="upload-note-filename" class="form-control" placeholder="e.g., Module1_Notes.pdf">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">File URL / Document Link</label>
+                        <input type="url" id="upload-note-fileurl" class="form-control" placeholder="https://drive.google.com/... or https://example.com/notes.pdf">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline modal-close">Cancel</button>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-check"></i> Submit Note</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: ADD SUBJECT -->
+    <div id="modal-add-subject" class="modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3 class="modal-title"><i class="fas fa-book text-primary"></i> Add New Subject</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="form-add-subject">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">Subject Name *</label>
+                        <input type="text" id="add-subject-name" class="form-control" placeholder="e.g., Operating Systems" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Subject Code *</label>
+                        <input type="text" id="add-subject-code" class="form-control" placeholder="e.g., CS301" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline modal-close">Cancel</button>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Add Subject</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 3: REGISTER STUDENT -->
+    <div id="modal-add-student" class="modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3 class="modal-title"><i class="fas fa-user-plus text-primary"></i> Register Student Profile</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="form-add-student">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">Full Name *</label>
+                        <input type="text" id="add-student-name" class="form-control" placeholder="e.g., Alice Smith" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Email Address *</label>
+                        <input type="email" id="add-student-email" class="form-control" placeholder="alice@university.edu" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" id="add-student-password" class="form-control" placeholder="Set profile password">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline modal-close">Cancel</button>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-user-check"></i> Register Student</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 4: NOTE DETAILS, RATINGS & COMMENTS -->
+    <div id="modal-note-details" class="modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3 class="modal-title"><i class="fas fa-file-alt text-primary"></i> Note Details</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="note-details-content">
+                    <!-- Loaded dynamically -->
+                </div>
+
+                <!-- Add Comment Form -->
+                <form id="form-add-comment" class="mt-3">
+                    <div class="form-group">
+                        <label class="form-label">Add a Comment</label>
+                        <div class="d-flex gap-2">
+                            <textarea id="comment-input" class="form-control" placeholder="Write a comment or ask a question..." required></textarea>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary btn-sm">
+                            <i class="fas fa-paper-plane me-1"></i> Post Comment
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application JavaScript (ES Modules) -->
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
